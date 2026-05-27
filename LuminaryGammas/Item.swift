@@ -8,26 +8,20 @@
 import Foundation
 import SwiftData
 
-struct WalkNote: Codable, Identifiable {
-    var id: UUID = UUID()
-    var text: String
-    var timestamp: Date
-}
-
 @Model
 final class WalkSession {
-    var id: UUID
-    var sessionName: String
-    var date: Date
-    var durationMinutes: Int
-    var steps: Int
-    var moodBefore: Double         // 0.0 (low) → 1.0 (great)
-    var moodAfter: Double
-    var preWalkNote: String
-    var duringWalkNotes: [WalkNote]
-    var reflectionType: String     // "free" or "guided"
-    var freeReflection: String
-    var guidedAnswers: [String]    // [howFeelingNow, oneSmallStep, oneThingToCarry]
+    var id: UUID = UUID()
+    var sessionName: String = ""
+    var date: Date = Date()
+    var durationMinutes: Int = 0
+    var steps: Int = 0
+    var moodBefore: Int = 3             // 1 (Very low) → 5 (Great)
+    var moodAfter: Int = 3
+    var preWalkNote: String = ""
+    var duringWalkNotes: [String] = []  // CloudKit compatible
+    var reflectionType: String = "free"
+    var freeReflection: String = ""
+    var guidedAnswers: [String] = ["", "", ""]
 
     var displayNote: String {
         if !freeReflection.isEmpty { return freeReflection }
@@ -40,10 +34,10 @@ final class WalkSession {
         date: Date = Date(),
         durationMinutes: Int = 0,
         steps: Int = 0,
-        moodBefore: Double = 0.5,
-        moodAfter: Double = 0.5,
+        moodBefore: Int = 3,
+        moodAfter: Int = 3,
         preWalkNote: String = "",
-        duringWalkNotes: [WalkNote] = [],
+        duringWalkNotes: [String] = [],
         reflectionType: String = "free",
         freeReflection: String = "",
         guidedAnswers: [String] = ["", "", ""]

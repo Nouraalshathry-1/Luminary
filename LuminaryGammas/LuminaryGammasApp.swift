@@ -5,6 +5,7 @@
 //  Created by Noura Alshathry on 26/05/2026.
 //
 
+
 import SwiftUI
 import SwiftData
 
@@ -12,7 +13,7 @@ import SwiftData
 struct LuminaryGammasApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([WalkSession.self])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {

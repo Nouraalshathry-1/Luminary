@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import Combine
 
+
 // MARK: - ViewModel
 
 class HomeViewModel: ObservableObject {
@@ -31,16 +32,18 @@ struct HomeView: View {
 
                 VStack(alignment: .leading, spacing: 0) {
 
-                    // History button
+                    // History button — liquid glass
                     HStack {
                         Spacer()
                         Button {
                             viewModel.showHistory = true
                         } label: {
                             Image(systemName: "clock.arrow.circlepath")
-                                .font(.system(size: 30, weight: .semibold))
+                                .font(.system(size: 40, weight: .semibold))
                                 .foregroundStyle(.white)
+                                .padding(14)
                         }
+                        .glassEffect(in: Circle())
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 8)
@@ -98,10 +101,7 @@ struct HomeView: View {
                         .background(Color("AccentColor").ignoresSafeArea())
                 }
                 .navigationDestination(isPresented: $viewModel.showWalkSetup) {
-                    Text("Walk setup — coming soon")
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color("AccentColor").ignoresSafeArea())
+                    BeforeWalkingView()
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -122,7 +122,7 @@ struct MeditateCardView: View {
             HStack(alignment: .bottom, spacing: 0) {
 
                 // Left: text + button
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 35) {
                     Spacer()
                     Text("walking helps you to clear your mind")
                         .font(.system(size: 16, weight: .semibold))
@@ -142,18 +142,19 @@ struct MeditateCardView: View {
                 .padding(.bottom, 22)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                // Right: candle image, slightly overflowing bottom
-                Image("HomeCandle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 130)
+                // Right: candle, bottom-clipped by card's clipShape
+                CandleComponent()
+                    .flameScale(1.0)
                     .offset(y: 28)
+                    .padding(.trailing, 12)
             }
         }
         .frame(height: 180)
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
+
+// FlameShape and the animated candle are defined in CandleComponent.swift
 
 // MARK: - LastWalkRowView
 
