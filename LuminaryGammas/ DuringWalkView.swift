@@ -74,7 +74,7 @@ struct DuringWalkView: View {
                 Spacer()
                 CandleComponent()
                     .flameScale(1.0)
-                    .scaleEffect(2.3, anchor: .bottom)
+                    .scaleEffect(x: 2.0, y: 2.9, anchor: .bottom)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .allowsHitTesting(false)
