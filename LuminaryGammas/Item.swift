@@ -24,8 +24,12 @@ final class WalkSession {
     var guidedAnswers: [String] = ["", "", ""]
 
     var displayNote: String {
+        // Post-walk reflections take priority (written after the walk)
         if !freeReflection.isEmpty { return freeReflection }
         if let first = guidedAnswers.first(where: { !$0.isEmpty }) { return first }
+        // During-walk quick notes are the main source shown on the home screen
+        if let first = duringWalkNotes.first(where: { !$0.isEmpty }) { return first }
+        // Pre-walk note as a last resort
         return preWalkNote
     }
 

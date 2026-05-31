@@ -6,5 +6,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>Luminary counts your steps during mindful walks.</string>
 </dict>
 </plist>
