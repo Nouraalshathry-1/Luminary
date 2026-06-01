@@ -5,9 +5,6 @@
 //  Created by Noura Alshathry on 31/05/2026.
 //
 
-
-
-
 import SwiftUI
 import SwiftData
 import CoreMotion
@@ -74,7 +71,7 @@ struct DuringWalkView: View {
                 Spacer()
                 CandleComponent()
                     .flameScale(1.0)
-                    .scaleEffect(x: 2.0, y: 2.9, anchor: .bottom)
+                    .scaleEffect(x: 2.3, y: 3.2, anchor: .bottom)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .allowsHitTesting(false)
@@ -113,10 +110,7 @@ struct DuringWalkView: View {
             WalkNoteSheet(noteText: $pendingNoteText)
         }
         .navigationDestination(isPresented: $showAfterWalk) {
-            Text("After Walk — coming soon")
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color("AccentColor").ignoresSafeArea())
+            SessionTitleView(session: session)
         }
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -218,6 +212,7 @@ struct WalkNoteSheet: View {
         .modelContainer(container)
 }
 
+//
 //import SwiftUI
 //import SwiftData
 //import CoreMotion
@@ -276,9 +271,21 @@ struct WalkNoteSheet: View {
 //        ZStack {
 //            Color("AccentColor").ignoresSafeArea()
 //
+//            // ── Candle layer ───────────────────────────────────────────
+//            // Spacer pushes the candle's layout to the screen bottom.
+//            // scaleEffect(anchor: .bottom) grows the visual upward from that
+//            // point, so the base stays flush with the screen edge.
 //            VStack(spacing: 0) {
+//                Spacer()
+//                CandleComponent()
+//                    .flameScale(1.0)
+//                    .scaleEffect(x: 2.0, y: 2.9, anchor: .bottom)
+//            }
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .allowsHitTesting(false)
 //
-//                // Hint — non-interactive, taps fall through to the ZStack gesture
+//            // ── Content overlay: hint at top, button at bottom ─────────
+//            VStack(spacing: 0) {
 //                Text("Tap the screen to take a quick note")
 //                    .font(.callout)
 //                    .foregroundStyle(.white.opacity(0.3))
@@ -286,14 +293,8 @@ struct WalkNoteSheet: View {
 //                    .padding(.top, 20)
 //                    .allowsHitTesting(false)
 //
-//                // Candle — centred in the remaining space, 2× visual scale
-//                CandleComponent()
-//                    .flameScale(1.0)
-//                    .scaleEffect(2.0)
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                    .allowsHitTesting(false)
+//                Spacer()
 //
-//                // End-walk button — consumes its own touch, never fires the tap gesture
 //                Button(action: endWalk) {
 //                    Text("End the walk")
 //                        .font(.headline).fontWeight(.semibold)
@@ -364,7 +365,6 @@ struct WalkNoteSheet: View {
 //        NavigationStack {
 //            VStack(alignment: .leading, spacing: 16) {
 //
-//                // Warning callout
 //                Label {
 //                    Text("Take a pause from walking, then write")
 //                        .font(.subheadline)
@@ -375,7 +375,6 @@ struct WalkNoteSheet: View {
 //                }
 //                .padding(.top, 4)
 //
-//                // Text editor on a system-tinted background
 //                ZStack(alignment: .topLeading) {
 //                    RoundedRectangle(cornerRadius: 12)
 //                        .fill(Color(.secondarySystemBackground))
