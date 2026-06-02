@@ -5,6 +5,7 @@
 //  Created by Noura Alshathry on 31/05/2026.
 //
 
+
 import SwiftUI
 import SwiftData
 import CoreMotion
@@ -130,6 +131,7 @@ struct DuringWalkView: View {
         pendingNoteText = ""
         guard !trimmed.isEmpty else { return }
         session.duringWalkNotes.append(trimmed)
+        session.duringWalkNoteTimestamps.append(Date())
         try? modelContext.save()
     }
 
@@ -155,7 +157,7 @@ struct WalkNoteSheet: View {
             VStack(alignment: .leading, spacing: 16) {
 
                 Label {
-                    Text("Take a pause from walking, then write")
+                    Text("Take a pause from walking before writing")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } icon: {
@@ -212,7 +214,6 @@ struct WalkNoteSheet: View {
         .modelContainer(container)
 }
 
-//
 //import SwiftUI
 //import SwiftData
 //import CoreMotion
@@ -279,7 +280,7 @@ struct WalkNoteSheet: View {
 //                Spacer()
 //                CandleComponent()
 //                    .flameScale(1.0)
-//                    .scaleEffect(x: 2.0, y: 2.9, anchor: .bottom)
+//                    .scaleEffect(x: 2.3, y: 3.2, anchor: .bottom)
 //            }
 //            .frame(maxWidth: .infinity, maxHeight: .infinity)
 //            .allowsHitTesting(false)
@@ -318,10 +319,7 @@ struct WalkNoteSheet: View {
 //            WalkNoteSheet(noteText: $pendingNoteText)
 //        }
 //        .navigationDestination(isPresented: $showAfterWalk) {
-//            Text("After Walk — coming soon")
-//                .foregroundStyle(.white)
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(Color("AccentColor").ignoresSafeArea())
+//            SessionTitleView(session: session)
 //        }
 //        .toolbar(.hidden, for: .navigationBar)
 //    }
@@ -422,3 +420,4 @@ struct WalkNoteSheet: View {
 //    return NavigationStack { DuringWalkView(session: session) }
 //        .modelContainer(container)
 //}
+//

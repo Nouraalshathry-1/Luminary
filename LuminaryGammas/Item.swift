@@ -18,7 +18,8 @@ final class WalkSession {
     var moodBefore: Int = 3             // 1 (Very low) → 5 (Great)
     var moodAfter: Int = 3
     var preWalkNote: String = ""
-    var duringWalkNotes: [String] = []  // CloudKit compatible
+    var duringWalkNotes: [String] = []           // CloudKit compatible
+    var duringWalkNoteTimestamps: [Date] = []   // parallel array — same index as duringWalkNotes
     var reflectionType: String = "free"
     var freeReflection: String = ""
     var guidedAnswers: [String] = ["", "", ""]
