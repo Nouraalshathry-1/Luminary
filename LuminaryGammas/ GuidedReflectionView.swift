@@ -178,6 +178,7 @@ struct GuidedReflectionView: View {
                         saveAnswer()
                         if isLastQuestion {
                             nav.showWalkSetup = false
+                            nav.showHistory   = false
                         } else {
                             showNext = true
                         }
@@ -304,7 +305,6 @@ private struct GuidedReflectionPreview: View {
 }
 
 #Preview { GuidedReflectionPreview() }
-
 
 //import SwiftUI
 //import SwiftData

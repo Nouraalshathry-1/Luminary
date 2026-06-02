@@ -167,7 +167,8 @@ struct FreeReflectionView: View {
     private func saveReflection() {
         session.freeReflection = reflectionText.trimmingCharacters(in: .whitespacesAndNewlines)
         try? modelContext.save()
-        nav.showWalkSetup = false   // collapse entire walk stack → home
+        nav.showWalkSetup = false
+        nav.showHistory   = false
     }
 
     private func readSafeArea() {

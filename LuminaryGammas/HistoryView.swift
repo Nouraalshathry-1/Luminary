@@ -7,6 +7,10 @@
 
 
 
+
+
+
+
 import SwiftUI
 import SwiftData
 
@@ -129,25 +133,16 @@ struct HistoryView: View {
                     .scrollContentBackground(.hidden)
                     .padding(.top, 12)
                     // Tapping a session:
-                    //   • No reflection yet  → AfterWalkingView to complete it
-                    //   • Already reflected  → detail view (coming next)
+                    //   • No reflection yet  → WalkStatsView to pick reflection type
+                    //   • Already reflected  → SessionDetailView
                     .navigationDestination(item: $selectedSession) { session in
                         let hasReflection = !session.freeReflection.isEmpty ||
                             session.guidedAnswers.contains(where: { !$0.isEmpty })
 
                         if hasReflection {
-                            // Page 12 (session detail) — coming next
-                            Text("Session detail — coming soon")
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(Color("AccentColor").ignoresSafeArea())
-                                .toolbar(.hidden, for: .navigationBar)
+                            SessionDetailView(session: session)
                         } else {
-                            // Resume the reflection flow from the mood-after step
-                            AfterWalkingView(
-                                session: session,
-                                reflectionType: session.reflectionType.isEmpty ? "free" : session.reflectionType
-                            )
+                            WalkStatsView(session: session, showBackButton: true)
                         }
                     }
                 }
@@ -420,6 +415,8 @@ private struct HistoryPreview: View {
 
 #Preview { HistoryPreview() }
 
+
+
 //import SwiftUI
 //import SwiftData
 //
@@ -541,13 +538,27 @@ private struct HistoryPreview: View {
 //                    .listStyle(.plain)
 //                    .scrollContentBackground(.hidden)
 //                    .padding(.top, 12)
-//                    // Page 12 destination — pushed programmatically, no chevron
+//                    // Tapping a session:
+//                    //   • No reflection yet  → AfterWalkingView to complete it
+//                    //   • Already reflected  → detail view (coming next)
 //                    .navigationDestination(item: $selectedSession) { session in
-//                        Text("Session detail — coming soon")
-//                            .foregroundStyle(.white)
-//                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                            .background(Color("AccentColor").ignoresSafeArea())
-//                            .toolbar(.hidden, for: .navigationBar)
+//                        let hasReflection = !session.freeReflection.isEmpty ||
+//                            session.guidedAnswers.contains(where: { !$0.isEmpty })
+//
+//                        if hasReflection {
+//                            // Page 12 (session detail) — coming next
+//                            Text("Session detail — coming soon")
+//                                .foregroundStyle(.white)
+//                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                                .background(Color("AccentColor").ignoresSafeArea())
+//                                .toolbar(.hidden, for: .navigationBar)
+//                        } else {
+//                            // Resume the reflection flow from the mood-after step
+//                            AfterWalkingView(
+//                                session: session,
+//                                reflectionType: session.reflectionType.isEmpty ? "free" : session.reflectionType
+//                            )
+//                        }
 //                    }
 //                }
 //            }
@@ -818,4 +829,3 @@ private struct HistoryPreview: View {
 //}
 //
 //#Preview { HistoryPreview() }
-//

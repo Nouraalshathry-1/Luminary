@@ -14,8 +14,11 @@ import SwiftData
 
 struct WalkStatsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss)      private var dismiss
     @EnvironmentObject private var nav: HomeViewModel
+
     let session: WalkSession
+    var showBackButton: Bool = false
 
     @State private var showFreeReflection  = false
     @State private var showGuidedReflection = false
@@ -46,6 +49,19 @@ struct WalkStatsView: View {
             // ── Scrollable content ─────────────────────────────────────
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
+
+                    // ── Back button (History flow only) ────────────────
+                    if showBackButton {
+                        Button { dismiss() } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .glassEffect(in: Circle())
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                    }
 
                     // ── Dynamic title ──────────────────────────────────
                     VStack(alignment: .leading, spacing: 6) {
@@ -107,6 +123,7 @@ struct WalkStatsView: View {
 
                         Button {
                             nav.showWalkSetup = false
+                            nav.showHistory   = false
                         } label: {
                             Text("Reflect later from history")
                                 .font(.callout).fontWeight(.medium)
@@ -284,7 +301,6 @@ private struct WalkStatsPreview: View {
 
 #Preview { WalkStatsPreview() }
 
-
 //import SwiftUI
 //import SwiftData
 //
@@ -402,18 +418,10 @@ private struct WalkStatsPreview: View {
 //        .toolbar(.hidden, for: .navigationBar)
 //        .onAppear { readSafeArea() }
 //        .navigationDestination(isPresented: $showFreeReflection) {
-//            // Page 6a — Free reflection (coming next)
-//            Text("Free Reflection — coming soon")
-//                .foregroundStyle(.white)
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(Color("AccentColor").ignoresSafeArea())
+//            AfterWalkingView(session: session, reflectionType: "free")
 //        }
 //        .navigationDestination(isPresented: $showGuidedReflection) {
-//            // Page 6b — Guided reflection (coming next)
-//            Text("Guided Reflection — coming soon")
-//                .foregroundStyle(.white)
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(Color("AccentColor").ignoresSafeArea())
+//            AfterWalkingView(session: session, reflectionType: "guided")
 //        }
 //    }
 //
@@ -569,3 +577,4 @@ private struct WalkStatsPreview: View {
 //}
 //
 //#Preview { WalkStatsPreview() }
+//
