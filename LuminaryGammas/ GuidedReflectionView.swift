@@ -5,7 +5,6 @@
 //  Created by Noura Alshathry on 02/06/2026.
 //
 
-
 import SwiftUI
 import SwiftData
 
@@ -24,6 +23,12 @@ struct GuidedReflectionView: View {
         "How are you feeling right now?",
         "What did the walk bring up that you hadn\u{2019}t noticed before?",
         "What\u{2019}s one thing you want to carry forward from this walk?"
+    ]
+
+    private let placeholders: [String] = [
+        "Right now, I feel... or Checking in with myself...",
+        "I noticed that... or A thought that came to mind...",
+        "I want to remember to... or Taking this with me..."
     ]
 
     @State private var answerText   = ""
@@ -85,8 +90,21 @@ struct GuidedReflectionView: View {
 
                         // ── Answer text editor ─────────────────────────
                         ZStack(alignment: .topLeading) {
-                            RoundedRectangle(cornerRadius: 16)
+                            RoundedRectangle(cornerRadius: 20)
                                 .fill(Color("SecondColor"))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.white.opacity(0.45), lineWidth: 1)
+                                )
+
+                            if answerText.isEmpty {
+                                Text(placeholders[questionIndex])
+                                    .font(.body)
+                                    .foregroundStyle(.white.opacity(0.25))
+                                    .padding(.horizontal, 16)
+                                    .padding(.top, 16)
+                                    .allowsHitTesting(false)
+                            }
 
                             TextEditor(text: $answerText)
                                 .focused($editorFocused)
@@ -287,6 +305,7 @@ private struct GuidedReflectionPreview: View {
 
 #Preview { GuidedReflectionPreview() }
 
+
 //import SwiftUI
 //import SwiftData
 //
@@ -420,21 +439,23 @@ private struct GuidedReflectionPreview: View {
 //                .scrollDismissesKeyboard(.immediately)
 //
 //                // ── Back + Next/Save buttons ───────────────────────────
+//                // HIG: secondary action (Back) uses ghost/outline style;
+//                // primary action (Next/Save) uses a solid filled style.
 //                HStack(spacing: 12) {
 //
-//                    // Back — shown on Q2 and Q3 only
+//                    // Back — liquid glass, secondary weight
 //                    if questionIndex > 0 {
 //                        Button { dismiss() } label: {
 //                            Text("Back")
-//                                .font(.headline).fontWeight(.semibold)
-//                                .foregroundStyle(Color("AccentColor"))
+//                                .font(.headline).fontWeight(.medium)
+//                                .foregroundStyle(.white.opacity(0.75))
 //                                .frame(maxWidth: .infinity)
-//                                .padding(.vertical, 18)
-//                                .background(Capsule().fill(Color.white.opacity(0.55)))
+//                                .padding(.vertical, 17)
 //                        }
+//                        .glassEffect(in: Capsule())
 //                    }
 //
-//                    // Next (Q1, Q2) or Save (Q3)
+//                    // Next / Save — solid white capsule, primary (matches Continue / Save app-wide)
 //                    Button {
 //                        saveAnswer()
 //                        if isLastQuestion {
@@ -447,7 +468,7 @@ private struct GuidedReflectionPreview: View {
 //                            .font(.headline).fontWeight(.semibold)
 //                            .foregroundStyle(Color("AccentColor"))
 //                            .frame(maxWidth: .infinity)
-//                            .padding(.vertical, 18)
+//                            .padding(.vertical, 17)
 //                            .background(Capsule().fill(Color.white.opacity(0.85)))
 //                    }
 //                }
