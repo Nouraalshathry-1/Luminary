@@ -5,7 +5,6 @@
 //  Created by Noura Alshathry on 26/05/2026.
 //
 
-
 import SwiftUI
 import SwiftData
 import Combine
@@ -106,6 +105,7 @@ struct HomeView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
+        .environmentObject(viewModel)   // lets WalkStatsView reach nav.showWalkSetup
         .ignoresSafeArea(.keyboard)
     }
 }
@@ -249,12 +249,6 @@ struct EmptyNotesView: View {
         .modelContainer(for: WalkSession.self, inMemory: true)
 }
 
-
-// SPACE
-
-
-
-//
 //import SwiftUI
 //import SwiftData
 //import Combine
@@ -288,7 +282,7 @@ struct EmptyNotesView: View {
 //                            viewModel.showHistory = true
 //                        } label: {
 //                            Image(systemName: "clock.arrow.circlepath")
-//                                .font(.system(size: 40, weight: .semibold))
+//                                .font(.system(size: 20, weight: .semibold))
 //                                .foregroundStyle(.white)
 //                                .padding(14)
 //                        }
@@ -303,7 +297,7 @@ struct EmptyNotesView: View {
 //                            .font(.largeTitle).fontWeight(.semibold)
 //                            .foregroundStyle(.white)
 //                        Text("Clear your mind with every step")
-//                            .font(.system(size: 16, weight: .semibold))
+//                            .font(.callout)
 //                            .foregroundStyle(.white.opacity(0.55))
 //                    }
 //                    .padding(.horizontal, 24)
@@ -319,7 +313,7 @@ struct EmptyNotesView: View {
 //                    // Last Walks
 //                    VStack(alignment: .leading, spacing: 0) {
 //                        Text("Last Walks")
-//                            .font(.system(size: 24, weight: .semibold))
+//                            .font(.title2).fontWeight(.semibold)
 //                            .foregroundStyle(.white)
 //                            .padding(.horizontal, 24)
 //                            .padding(.bottom, 16)
@@ -355,6 +349,7 @@ struct EmptyNotesView: View {
 //            }
 //            .toolbar(.hidden, for: .navigationBar)
 //        }
+//        .ignoresSafeArea(.keyboard)
 //    }
 //}
 //
@@ -374,13 +369,13 @@ struct EmptyNotesView: View {
 //                VStack(alignment: .leading, spacing: 35) {
 //                    Spacer()
 //                    Text("Light a candle and begin your mindful journey")
-//                        .font(.system(size: 16, weight: .semibold))
+//                        .font(.callout).fontWeight(.semibold)
 //                        .foregroundStyle(.white)
 //                        .fixedSize(horizontal: false, vertical: true)
 //
 //                    Button(action: onMeditateTap) {
 //                        Text("Start Session")
-//                            .font(.system(size: 16, weight: .semibold))
+//                            .font(.callout).fontWeight(.semibold)
 //                            .foregroundStyle(Color("AccentColor"))
 //                            .padding(.horizontal, 24)
 //                            .padding(.vertical, 10)
@@ -414,13 +409,16 @@ struct EmptyNotesView: View {
 //        session.date.formatted(.dateTime.month(.abbreviated).day())
 //    }
 //
-//    private var timeAndDuration: String {
-//        let time = session.date.formatted(
+//    private var formattedTime: String {
+//        session.date.formatted(
 //            .dateTime
 //                .hour(.defaultDigits(amPM: .abbreviated))
 //                .minute(.twoDigits)
 //        )
-//        return "\(time) • \(session.durationMinutes) min"
+//    }
+//
+//    private var durationLabel: String {
+//        session.durationMinutes > 0 ? "\(session.durationMinutes) min" : "< 1 min"
 //    }
 //
 //    var body: some View {
@@ -431,25 +429,32 @@ struct EmptyNotesView: View {
 //                .font(.system(size: 28))
 //                .frame(width: 40, height: 40)
 //
-//            // Date + time
+//            // Date + time  (left column)
 //            VStack(alignment: .leading, spacing: 3) {
 //                Text(formattedDate)
-//                    .font(.system(size: 16, weight: .semibold))
+//                    .font(.callout).fontWeight(.semibold)
 //                    .foregroundStyle(.white)
-//                Text(timeAndDuration)
-//                    .font(.system(size: 13, weight: .semibold))
+//                Text(formattedTime)
+//                    .font(.footnote)
 //                    .foregroundStyle(.white.opacity(0.45))
 //            }
 //
 //            Spacer()
 //
-//            // Quote snippet
-//            Text("\u{201C}\(session.displayNote)\u{201D}")
-//                .font(.system(size: 13, weight: .semibold))
-//                .foregroundStyle(.white.opacity(0.65))
-//                .multilineTextAlignment(.trailing)
-//                .lineLimit(3)
-//                .frame(maxWidth: 160, alignment: .trailing)
+//            // Note snippet + duration  (right column)
+//            VStack(alignment: .trailing, spacing: 5) {
+//                if !session.displayNote.isEmpty {
+//                    Text("\u{201C}\(session.displayNote)\u{201D}")
+//                        .font(.footnote)
+//                        .foregroundStyle(.white.opacity(0.65))
+//                        .multilineTextAlignment(.trailing)
+//                        .lineLimit(2)
+//                }
+//                Text(durationLabel)
+//                    .font(.caption2).fontWeight(.medium)
+//                    .foregroundStyle(.white.opacity(0.35))
+//            }
+//            .frame(maxWidth: 160, alignment: .trailing)
 //        }
 //        .padding(.horizontal, 24)
 //        .padding(.vertical, 14)
@@ -466,11 +471,11 @@ struct EmptyNotesView: View {
 //                .opacity(0.4)
 //
 //            Text("Your notes will appear here")
-//                .font(.system(size: 16, weight: .semibold))
+//                .font(.callout).fontWeight(.semibold)
 //                .foregroundStyle(.white.opacity(0.65))
 //
 //            Text("Start your first mindful walk to see your reflections")
-//                .font(.system(size: 14, weight: .semibold))
+//                .font(.footnote)
 //                .foregroundStyle(.white.opacity(0.35))
 //                .multilineTextAlignment(.center)
 //        }
@@ -486,5 +491,3 @@ struct EmptyNotesView: View {
 //    HomeView()
 //        .modelContainer(for: WalkSession.self, inMemory: true)
 //}
-//
-//
