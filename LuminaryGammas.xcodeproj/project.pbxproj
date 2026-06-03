@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		AF8143372FC6331E00D0A134 /* LuminaryGammas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminaryGammas.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF8143372FC6331E00D0A134 /* Luminary - Walk & Reflect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Luminary - Walk & Reflect.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AF8143442FC6331F00D0A134 /* Exceptions for "LuminaryGammas" folder in "LuminaryGammas" target */ = {
+		AF8143442FC6331F00D0A134 /* Exceptions for "LuminaryGammas" folder in "Luminary - Walk & Reflect" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = AF8143362FC6331E00D0A134 /* LuminaryGammas */;
+			target = AF8143362FC6331E00D0A134 /* Luminary - Walk & Reflect */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -24,7 +24,7 @@
 		AF8143392FC6331E00D0A134 /* LuminaryGammas */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				AF8143442FC6331F00D0A134 /* Exceptions for "LuminaryGammas" folder in "LuminaryGammas" target */,
+				AF8143442FC6331F00D0A134 /* Exceptions for "LuminaryGammas" folder in "Luminary - Walk & Reflect" target */,
 			);
 			path = LuminaryGammas;
 			sourceTree = "<group>";
@@ -53,7 +53,7 @@
 		AF8143382FC6331E00D0A134 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AF8143372FC6331E00D0A134 /* LuminaryGammas.app */,
+				AF8143372FC6331E00D0A134 /* Luminary - Walk & Reflect.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AF8143362FC6331E00D0A134 /* LuminaryGammas */ = {
+		AF8143362FC6331E00D0A134 /* Luminary - Walk & Reflect */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AF8143452FC6331F00D0A134 /* Build configuration list for PBXNativeTarget "LuminaryGammas" */;
+			buildConfigurationList = AF8143452FC6331F00D0A134 /* Build configuration list for PBXNativeTarget "Luminary - Walk & Reflect" */;
 			buildPhases = (
 				AF8143332FC6331E00D0A134 /* Sources */,
 				AF8143342FC6331E00D0A134 /* Frameworks */,
@@ -76,11 +76,11 @@
 			fileSystemSynchronizedGroups = (
 				AF8143392FC6331E00D0A134 /* LuminaryGammas */,
 			);
-			name = LuminaryGammas;
+			name = "Luminary - Walk & Reflect";
 			packageProductDependencies = (
 			);
 			productName = LuminaryGammas;
-			productReference = AF8143372FC6331E00D0A134 /* LuminaryGammas.app */;
+			productReference = AF8143372FC6331E00D0A134 /* Luminary - Walk & Reflect.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AF8143362FC6331E00D0A134 /* LuminaryGammas */,
+				AF8143362FC6331E00D0A134 /* Luminary - Walk & Reflect */,
 			);
 		};
 /* End PBXProject section */
@@ -339,7 +339,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AF8143452FC6331F00D0A134 /* Build configuration list for PBXNativeTarget "LuminaryGammas" */ = {
+		AF8143452FC6331F00D0A134 /* Build configuration list for PBXNativeTarget "Luminary - Walk & Reflect" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF8143462FC6331F00D0A134 /* Debug */,
