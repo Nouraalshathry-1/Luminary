@@ -58,7 +58,7 @@ struct SessionDetailView: View {
             VStack(spacing: 0) {
 
                 // ── Header ─────────────────────────────────────────────
-                HStack {
+                HStack(spacing: 14) {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .semibold))
@@ -67,16 +67,11 @@ struct SessionDetailView: View {
                             .glassEffect(in: Circle())
                     }
 
-                    Spacer()
-
                     Text("History")
                         .font(.title).fontWeight(.bold)
                         .foregroundStyle(.white)
 
                     Spacer()
-
-                    // Balance the back button so title stays centred
-                    Color.clear.frame(width: 44, height: 44)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
@@ -98,12 +93,12 @@ struct SessionDetailView: View {
                         .padding(.horizontal, 24)
                         .padding(.top, 24)
 
-                        // ── Stats banner (matches WalkStatsView) ───────────
+                        // ── Stats banner ───────────────────────────────
                         Text("stats")
                             .font(.subheadline).fontWeight(.medium)
                             .foregroundStyle(.white.opacity(0.45))
                             .padding(.horizontal, 24)
-                            .padding(.top, 40)
+                            .padding(.top, 24)
 
                         HStack(spacing: 0) {
                             DetailStatColumn(emoji: "⏱️",
@@ -128,12 +123,12 @@ struct SessionDetailView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 14)
 
-                        // ── Mood before & after ────────────────────────────
+                        // ── Mood before & after ────────────────────────
                         Text("How You feel before and after")
                             .font(.callout)
                             .foregroundStyle(.white.opacity(0.55))
                             .padding(.horizontal, 24)
-                            .padding(.top, 44)
+                            .padding(.top, 28)
 
                         MoodComparisonCard(
                             moodBefore: session.moodBefore,
@@ -142,7 +137,7 @@ struct SessionDetailView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 14)
 
-                        // ── Reflection ─────────────────────────────────────
+                        // ── Reflection ─────────────────────────────────
                         VStack(alignment: .leading, spacing: 5) {
                             Text("Reflection")
                                 .font(.title3).fontWeight(.bold)
@@ -152,7 +147,7 @@ struct SessionDetailView: View {
                                 .foregroundStyle(.white.opacity(0.45))
                         }
                         .padding(.horizontal, 24)
-                        .padding(.top, 48)
+                        .padding(.top, 28)
 
                         if session.reflectionType == "guided" {
                             ForEach(0..<3, id: \.self) { i in
@@ -170,14 +165,14 @@ struct SessionDetailView: View {
                             )
                         }
 
-                        // ── During-walk notes ──────────────────────────────
+                        // ── During-walk notes ──────────────────────────
                         if !notesWithTimestamps.isEmpty {
 
                             Text("During walk notes")
                                 .font(.callout).fontWeight(.semibold)
                                 .foregroundStyle(.white.opacity(0.55))
                                 .padding(.horizontal, 24)
-                                .padding(.top, 48)
+                                .padding(.top, 28)
 
                             Rectangle()
                                 .fill(Color.white.opacity(0.12))
@@ -199,12 +194,12 @@ struct SessionDetailView: View {
                             }
                         }
 
-                        // ── Pre-walk note ──────────────────────────────────
+                        // ── Pre-walk note ──────────────────────────────
                         Text("pre-walk notes")
                             .font(.callout).fontWeight(.semibold)
                             .foregroundStyle(.white.opacity(0.55))
                             .padding(.horizontal, 24)
-                            .padding(.top, 48)
+                            .padding(.top, 28)
 
                         Text("How do you feel?")
                             .font(.callout).fontWeight(.semibold)
@@ -248,8 +243,6 @@ private struct MoodComparisonCard: View {
     let moodAfter:  Int
 
     var body: some View {
-        // Both candles are the same physical size — flame scale alone
-        // communicates the mood difference (tiny/no flame vs full flame).
         HStack(alignment: .bottom, spacing: 0) {
 
             // Before
@@ -257,7 +250,7 @@ private struct MoodComparisonCard: View {
                 CandleComponent()
                     .flameScale(CandleComponent.flameScale(for: moodBefore))
                     .flickering(false)
-                    .frame(height: 185)   // same frame as after
+                    .frame(height: 200, alignment: .bottom)
 
                 Text(CandleComponent.label(for: moodBefore))
                     .font(.caption).fontWeight(.medium)
@@ -269,14 +262,14 @@ private struct MoodComparisonCard: View {
             Image(systemName: "arrow.right")
                 .font(.system(size: 18, weight: .regular))
                 .foregroundStyle(.white.opacity(0.55))
-                .padding(.bottom, 34)   // lifts arrow to ~body centre
+                .padding(.bottom, 34)
 
             // After
             VStack(spacing: 10) {
                 CandleComponent()
                     .flameScale(CandleComponent.flameScale(for: moodAfter))
                     .flickering(false)
-                    .frame(height: 185)
+                    .frame(height: 200, alignment: .bottom)
 
                 Text(CandleComponent.label(for: moodAfter))
                     .font(.caption).fontWeight(.medium)
@@ -290,7 +283,7 @@ private struct MoodComparisonCard: View {
     }
 }
 
-// MARK: - DetailStatColumn  (mirrors WalkStatsView's StatColumn)
+// MARK: - DetailStatColumn
 
 private struct DetailStatColumn: View {
     let emoji: String
@@ -317,14 +310,14 @@ private struct DetailStatColumn: View {
     }
 }
 
-// MARK: - ReflectionEntry  (question label + read-only answer box)
+// MARK: - ReflectionEntry
 
 private struct ReflectionEntry: View {
     let question: String
     let answer:   String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(question)
                 .font(.callout).fontWeight(.semibold)
                 .foregroundStyle(.white)
@@ -447,6 +440,9 @@ private struct SessionDetailPreview: View {
 }
 
 #Preview { SessionDetailPreview() }
+
+
+
 
 //import SwiftUI
 //import SwiftData
