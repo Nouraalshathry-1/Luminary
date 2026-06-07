@@ -53,7 +53,7 @@ struct HomeView: View {
 
                 VStack(alignment: .leading, spacing: 0) {
 
-                    // History button — liquid glass
+                    // History button — fixed, never scrolls away
                     HStack {
                         Spacer()
                         Button {
@@ -69,51 +69,59 @@ struct HomeView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 12)
 
-                    // Title
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Let's take a walk")
-                            .font(.largeTitle).fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                        Text("Clear your mind with every step")
-                            .font(.callout)
-                            .foregroundStyle(.white.opacity(0.55))
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
+                    // Scrollable body — allows scrolling at large text sizes
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 0) {
 
-                    // Meditate card
-                    MeditateCardView {
-                        viewModel.showWalkSetup = true
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 80)
-
-                    // Last Walks
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Last Walks")
-                            .font(.title2).fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            // Title
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Let's take a walk")
+                                    .font(.largeTitle).fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Text("Clear your mind with every step")
+                                    .font(.callout)
+                                    .foregroundStyle(.white.opacity(0.55))
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                             .padding(.horizontal, 24)
-                            .padding(.bottom, 16)
+                            .padding(.top, 16)
 
-                        if recentNotes.isEmpty {
-                            EmptyNotesView()
-                        } else {
-                            VStack(spacing: 0) {
-                                ForEach(recentNotes) { note in
-                                    LastWalkRowView(note: note)
-                                    if note.id != recentNotes.last?.id {
-                                        Divider()
-                                            .background(Color.white.opacity(0.12))
-                                            .padding(.horizontal, 24)
+                            // Meditate card
+                            MeditateCardView {
+                                viewModel.showWalkSetup = true
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 36)
+
+                            // Last Walks
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text("Last Walks")
+                                    .font(.title2).fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 24)
+                                    .padding(.bottom, 16)
+
+                                if recentNotes.isEmpty {
+                                    EmptyNotesView()
+                                } else {
+                                    VStack(spacing: 0) {
+                                        ForEach(recentNotes) { note in
+                                            LastWalkRowView(note: note)
+                                            if note.id != recentNotes.last?.id {
+                                                Divider()
+                                                    .background(Color.white.opacity(0.12))
+                                                    .padding(.horizontal, 24)
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            .padding(.top, 36)
+
+                            Spacer().frame(height: 40)
                         }
                     }
-                    .padding(.top, 36)
-
-                    Spacer()
                 }
                 .navigationDestination(isPresented: $viewModel.showHistory) {
                     HistoryView()
@@ -126,6 +134,7 @@ struct HomeView: View {
         }
         .environmentObject(viewModel)   // lets WalkStatsView reach nav.showWalkSetup
         .ignoresSafeArea(.keyboard)
+        .dynamicTypeSize(.large ... .accessibility3)
     }
 }
 
@@ -142,8 +151,7 @@ struct MeditateCardView: View {
             HStack(alignment: .bottom, spacing: 0) {
 
                 // Left: text + button
-                VStack(alignment: .leading, spacing: 35) {
-                    Spacer()
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Light a candle and begin your mindful journey")
                         .font(.callout).fontWeight(.semibold)
                         .foregroundStyle(.white)
@@ -153,13 +161,13 @@ struct MeditateCardView: View {
                         Text("Start Session")
                             .font(.callout).fontWeight(.semibold)
                             .foregroundStyle(Color("AccentColor"))
-                            .padding(.horizontal, 24)
+                            .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                             .background(Capsule().fill(.white))
                     }
                 }
                 .padding(.leading, 20)
-                .padding(.bottom, 22)
+                .padding(.vertical, 22)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Right: candle, bottom-clipped by card's clipShape
@@ -169,7 +177,7 @@ struct MeditateCardView: View {
                     .padding(.trailing, 12)
             }
         }
-        .frame(height: 180)
+        .frame(minHeight: 180)
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
@@ -211,6 +219,7 @@ struct LastWalkRowView: View {
                 Text(formattedTimeDuration)
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.45))
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer()
@@ -220,8 +229,8 @@ struct LastWalkRowView: View {
                 .font(.footnote)
                 .foregroundStyle(.white.opacity(0.65))
                 .multilineTextAlignment(.trailing)
-                .lineLimit(2)
-                .frame(maxWidth: 160, alignment: .trailing)
+                .lineLimit(3)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 14)
@@ -260,6 +269,7 @@ struct EmptyNotesView: View {
 }
 
 
+
 //import SwiftUI
 //import SwiftData
 //import Combine
@@ -271,13 +281,34 @@ struct EmptyNotesView: View {
 //    @Published var showWalkSetup = false
 //}
 //
+//// MARK: - RecentNote
+//
+//struct RecentNote: Identifiable {
+//    let id = UUID()
+//    let text: String
+//    let date: Date
+//    let sessionDuration: Int
+//}
+//
 //// MARK: - HomeView
 //
 //struct HomeView: View {
 //    @Query(sort: \WalkSession.date, order: .reverse) private var sessions: [WalkSession]
 //    @StateObject private var viewModel = HomeViewModel()
 //
-//    private var recentSessions: [WalkSession] { Array(sessions.prefix(3)) }
+//    private var recentNotes: [RecentNote] {
+//        var notes: [RecentNote] = []
+//        for session in sessions {
+//            for (index, note) in session.duringWalkNotes.enumerated() {
+//                guard !note.isEmpty else { continue }
+//                let date = index < session.duringWalkNoteTimestamps.count
+//                    ? session.duringWalkNoteTimestamps[index]
+//                    : session.date
+//                notes.append(RecentNote(text: note, date: date, sessionDuration: session.durationMinutes))
+//            }
+//        }
+//        return Array(notes.sorted { $0.date > $1.date }.prefix(3))
+//    }
 //
 //    var body: some View {
 //        NavigationStack {
@@ -329,13 +360,13 @@ struct EmptyNotesView: View {
 //                            .padding(.horizontal, 24)
 //                            .padding(.bottom, 16)
 //
-//                        if recentSessions.isEmpty {
+//                        if recentNotes.isEmpty {
 //                            EmptyNotesView()
 //                        } else {
 //                            VStack(spacing: 0) {
-//                                ForEach(recentSessions) { session in
-//                                    LastWalkRowView(session: session)
-//                                    if session.id != recentSessions.last?.id {
+//                                ForEach(recentNotes) { note in
+//                                    LastWalkRowView(note: note)
+//                                    if note.id != recentNotes.last?.id {
 //                                        Divider()
 //                                            .background(Color.white.opacity(0.12))
 //                                            .padding(.horizontal, 24)
@@ -412,22 +443,20 @@ struct EmptyNotesView: View {
 //// MARK: - LastWalkRowView
 //
 //struct LastWalkRowView: View {
-//    let session: WalkSession
+//    let note: RecentNote
 //
 //    private var formattedDate: String {
-//        session.date.formatted(.dateTime.month(.abbreviated).day())
+//        note.date.formatted(.dateTime.month(.abbreviated).day())
 //    }
 //
-//    private var formattedTime: String {
-//        session.date.formatted(
+//    private var formattedTimeDuration: String {
+//        let time = note.date.formatted(
 //            .dateTime
 //                .hour(.defaultDigits(amPM: .abbreviated))
 //                .minute(.twoDigits)
 //        )
-//    }
-//
-//    private var durationLabel: String {
-//        session.durationMinutes > 0 ? "\(session.durationMinutes) min" : "< 1 min"
+//        let duration = note.sessionDuration > 0 ? "\(note.sessionDuration) min" : "< 1 min"
+//        return "\(time) • \(duration)"
 //    }
 //
 //    var body: some View {
@@ -438,32 +467,25 @@ struct EmptyNotesView: View {
 //                .font(.system(size: 28))
 //                .frame(width: 40, height: 40)
 //
-//            // Date + time  (left column)
+//            // Date + time • duration  (left column)
 //            VStack(alignment: .leading, spacing: 3) {
 //                Text(formattedDate)
 //                    .font(.callout).fontWeight(.semibold)
 //                    .foregroundStyle(.white)
-//                Text(formattedTime)
+//                Text(formattedTimeDuration)
 //                    .font(.footnote)
 //                    .foregroundStyle(.white.opacity(0.45))
 //            }
 //
 //            Spacer()
 //
-//            // Note snippet + duration  (right column)
-//            VStack(alignment: .trailing, spacing: 5) {
-//                if !session.displayNote.isEmpty {
-//                    Text("\u{201C}\(session.displayNote)\u{201D}")
-//                        .font(.footnote)
-//                        .foregroundStyle(.white.opacity(0.65))
-//                        .multilineTextAlignment(.trailing)
-//                        .lineLimit(2)
-//                }
-//                Text(durationLabel)
-//                    .font(.caption2).fontWeight(.medium)
-//                    .foregroundStyle(.white.opacity(0.35))
-//            }
-//            .frame(maxWidth: 160, alignment: .trailing)
+//            // Note text  (right column)
+//            Text("\u{201C}\(note.text)\u{201D}")
+//                .font(.footnote)
+//                .foregroundStyle(.white.opacity(0.65))
+//                .multilineTextAlignment(.trailing)
+//                .lineLimit(2)
+//                .frame(maxWidth: 160, alignment: .trailing)
 //        }
 //        .padding(.horizontal, 24)
 //        .padding(.vertical, 14)
@@ -500,4 +522,4 @@ struct EmptyNotesView: View {
 //    HomeView()
 //        .modelContainer(for: WalkSession.self, inMemory: true)
 //}
-//
+

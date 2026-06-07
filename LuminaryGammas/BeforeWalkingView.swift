@@ -1,5 +1,9 @@
 
 
+
+
+
+
 import SwiftUI
 
 // MARK: - BeforeWalkingView
@@ -31,6 +35,7 @@ struct BeforeWalkingView: View {
                     Text("Before Walking")
                         .font(.title3).fontWeight(.semibold)
                         .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Spacer()
                 }
@@ -42,10 +47,12 @@ struct BeforeWalkingView: View {
                     Text("How do you feel now?")
                         .font(.largeTitle).fontWeight(.semibold)
                         .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Text("Adjust the candle\u{2019}s flame to match your current mental energy.")
                         .font(.callout)
                         .foregroundStyle(.white.opacity(0.5))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -96,6 +103,7 @@ struct BeforeWalkingView: View {
                 .padding(.bottom, 40)
             }
         }
+        .dynamicTypeSize(.large ... .accessibility2)
         .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(isPresented: $showNextPage) {
             PreWalkNoteView(moodBefore: moodLevel)
@@ -161,6 +169,12 @@ struct MoodSlider: View {
     }
 }
 
+
+
+
+
+//
+//
 //
 //import SwiftUI
 //

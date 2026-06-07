@@ -10,7 +10,6 @@
 
 
 
-
 import SwiftUI
 import SwiftData
 
@@ -282,7 +281,7 @@ private struct SessionCard: View {
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
         }
-        .background(Color("FirstBox"), in: RoundedRectangle(cornerRadius: 22))
+        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 22))
     }
 }
 
@@ -414,6 +413,9 @@ private struct HistoryPreview: View {
 }
 
 #Preview { HistoryPreview() }
+
+
+
 
 
 

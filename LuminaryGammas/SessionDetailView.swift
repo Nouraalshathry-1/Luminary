@@ -5,18 +5,30 @@
 //  Created by Noura Alshathry on 02/06/2026.
 //
 
+
+
+
+
+
 import SwiftUI
 import SwiftData
 
 // MARK: - SessionDetailView  (Page 12)
 
 struct SessionDetailView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)       private var dismiss
+    @Environment(\.modelContext)  private var modelContext
 
     let session: WalkSession
 
     @State private var safeTop:    CGFloat = 59
     @State private var safeBottom: CGFloat = 34
+
+    // ── Edit mode ──────────────────────────────────────────────────────
+    @State private var isEditing = false
+    @State private var editedAnswers:        [String] = ["", "", ""]
+    @State private var editedFreeReflection: String   = ""
+    @State private var editedPreWalkNote:    String   = ""
 
     // ── Questions (same order as GuidedReflectionView) ─────────────────
     private let guidedQuestions: [String] = [
@@ -72,6 +84,17 @@ struct SessionDetailView: View {
                         .foregroundStyle(.white)
 
                     Spacer()
+
+                    Button {
+                        if isEditing { saveEdits() } else { isEditing = true }
+                    } label: {
+                        Text(isEditing ? "Save" : "Edit")
+                            .font(.callout).fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 9)
+                            .glassEffect(in: Capsule())
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
@@ -119,7 +142,7 @@ struct SessionDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 22)
-                        .background(Color("SecondColor"), in: RoundedRectangle(cornerRadius: 20))
+                        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 20))
                         .padding(.horizontal, 20)
                         .padding(.top, 14)
 
@@ -151,17 +174,17 @@ struct SessionDetailView: View {
 
                         if session.reflectionType == "guided" {
                             ForEach(0..<3, id: \.self) { i in
-                                let answer = i < session.guidedAnswers.count
-                                    ? session.guidedAnswers[i] : ""
                                 ReflectionEntry(
-                                    question: guidedQuestions[i],
-                                    answer:   answer
+                                    question:  guidedQuestions[i],
+                                    answer:    answerBinding(for: i),
+                                    isEditing: isEditing
                                 )
                             }
                         } else {
                             ReflectionEntry(
-                                question: "Write freely",
-                                answer:   session.freeReflection
+                                question:  "Write freely",
+                                answer:    $editedFreeReflection,
+                                isEditing: isEditing
                             )
                         }
 
@@ -207,21 +230,55 @@ struct SessionDetailView: View {
                             .padding(.horizontal, 24)
                             .padding(.top, 16)
 
-                        ReadOnlyBox(
-                            text:    session.preWalkNote.isEmpty ? "Skipped" : session.preWalkNote,
-                            isEmpty: session.preWalkNote.isEmpty
+                        EditableBox(
+                            text:      $editedPreWalkNote,
+                            isEmpty:   editedPreWalkNote.isEmpty,
+                            isEditing: isEditing
                         )
                         .padding(.top, 14)
 
                         Spacer().frame(height: 56)
                     }
                 }
+                .scrollDismissesKeyboard(.immediately)
             }
             .padding(.top, safeTop)
         }
         .ignoresSafeArea(.all)
         .toolbar(.hidden, for: .navigationBar)
-        .onAppear { readSafeArea() }
+        .onAppear {
+            readSafeArea()
+            loadEditable()
+        }
+    }
+
+    // MARK: - Helpers
+
+    /// Safe binding into editedAnswers without index-out-of-range.
+    private func answerBinding(for i: Int) -> Binding<String> {
+        Binding(
+            get: { i < editedAnswers.count ? editedAnswers[i] : "" },
+            set: { newVal in
+                while editedAnswers.count <= i { editedAnswers.append("") }
+                editedAnswers[i] = newVal
+            }
+        )
+    }
+
+    private func loadEditable() {
+        editedAnswers        = session.guidedAnswers.count >= 3
+                                    ? session.guidedAnswers
+                                    : Array(session.guidedAnswers) + Array(repeating: "", count: 3 - session.guidedAnswers.count)
+        editedFreeReflection = session.freeReflection
+        editedPreWalkNote    = session.preWalkNote
+    }
+
+    private func saveEdits() {
+        session.guidedAnswers   = editedAnswers
+        session.freeReflection  = editedFreeReflection
+        session.preWalkNote     = editedPreWalkNote
+        try? modelContext.save()
+        isEditing = false
     }
 
     // MARK: - Safe area
@@ -250,7 +307,6 @@ private struct MoodComparisonCard: View {
                 CandleComponent()
                     .flameScale(CandleComponent.flameScale(for: moodBefore))
                     .flickering(false)
-                    .frame(height: 200, alignment: .bottom)
 
                 Text(CandleComponent.label(for: moodBefore))
                     .font(.caption).fontWeight(.medium)
@@ -269,7 +325,6 @@ private struct MoodComparisonCard: View {
                 CandleComponent()
                     .flameScale(CandleComponent.flameScale(for: moodAfter))
                     .flickering(false)
-                    .frame(height: 200, alignment: .bottom)
 
                 Text(CandleComponent.label(for: moodAfter))
                     .font(.caption).fontWeight(.medium)
@@ -279,7 +334,7 @@ private struct MoodComparisonCard: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 24)
-        .background(Color("SecondColor"), in: RoundedRectangle(cornerRadius: 20))
+        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 20))
     }
 }
 
@@ -290,10 +345,12 @@ private struct DetailStatColumn: View {
     let value: String
     let label: String
 
+    @ScaledMetric private var valueFontSize: CGFloat = 30
+
     var body: some View {
         VStack(spacing: 5) {
             Text(value)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(.system(size: valueFontSize, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .monospacedDigit()
                 .minimumScaleFactor(0.7)
@@ -313,8 +370,9 @@ private struct DetailStatColumn: View {
 // MARK: - ReflectionEntry
 
 private struct ReflectionEntry: View {
-    let question: String
-    let answer:   String
+    let question:  String
+    @Binding var answer: String
+    let isEditing: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -323,20 +381,18 @@ private struct ReflectionEntry: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 24)
 
-            ReadOnlyBox(
-                text:    answer.isEmpty ? "—" : answer,
-                isEmpty: answer.isEmpty
-            )
+            EditableBox(text: $answer, isEmpty: answer.isEmpty, isEditing: isEditing)
         }
         .padding(.top, 32)
     }
 }
 
-// MARK: - ReadOnlyBox  (260 pt tall · stroke matching PreWalkNoteView)
+// MARK: - EditableBox  (read-only or editable · 260 pt tall)
 
-private struct ReadOnlyBox: View {
-    let text:    String
-    let isEmpty: Bool
+private struct EditableBox: View {
+    @Binding var text: String
+    let isEmpty:   Bool
+    let isEditing: Bool
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -344,17 +400,31 @@ private struct ReadOnlyBox: View {
                 .fill(Color("SecondColor"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.45), lineWidth: 1)
+                        .stroke(
+                            Color.white.opacity(isEditing ? 0.70 : 0.45),
+                            lineWidth: isEditing ? 1.5 : 1
+                        )
                 )
 
-            Text(text)
-                .font(.body)
-                .foregroundStyle(isEmpty ? .white.opacity(0.30) : .white.opacity(0.85))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
+            if isEditing {
+                TextEditor(text: $text)
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.85))
+                    .scrollContentBackground(.hidden)
+                    .background(.clear)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .tint(.white)
+            } else {
+                Text(text.isEmpty ? "—" : text)
+                    .font(.body)
+                    .foregroundStyle(isEmpty ? .white.opacity(0.30) : .white.opacity(0.85))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+            }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 260)
+        .frame(minHeight: 260)
         .padding(.horizontal, 20)
     }
 }
@@ -444,18 +514,26 @@ private struct SessionDetailPreview: View {
 
 
 
+
 //import SwiftUI
 //import SwiftData
 //
 //// MARK: - SessionDetailView  (Page 12)
 //
 //struct SessionDetailView: View {
-//    @Environment(\.dismiss) private var dismiss
+//    @Environment(\.dismiss)       private var dismiss
+//    @Environment(\.modelContext)  private var modelContext
 //
 //    let session: WalkSession
 //
 //    @State private var safeTop:    CGFloat = 59
 //    @State private var safeBottom: CGFloat = 34
+//
+//    // ── Edit mode ──────────────────────────────────────────────────────
+//    @State private var isEditing = false
+//    @State private var editedAnswers:        [String] = ["", "", ""]
+//    @State private var editedFreeReflection: String   = ""
+//    @State private var editedPreWalkNote:    String   = ""
 //
 //    // ── Questions (same order as GuidedReflectionView) ─────────────────
 //    private let guidedQuestions: [String] = [
@@ -497,7 +575,7 @@ private struct SessionDetailPreview: View {
 //            VStack(spacing: 0) {
 //
 //                // ── Header ─────────────────────────────────────────────
-//                HStack {
+//                HStack(spacing: 14) {
 //                    Button { dismiss() } label: {
 //                        Image(systemName: "chevron.left")
 //                            .font(.system(size: 16, weight: .semibold))
@@ -506,16 +584,22 @@ private struct SessionDetailPreview: View {
 //                            .glassEffect(in: Circle())
 //                    }
 //
-//                    Spacer()
-//
 //                    Text("History")
 //                        .font(.title).fontWeight(.bold)
 //                        .foregroundStyle(.white)
 //
 //                    Spacer()
 //
-//                    // Balance the back button so title stays centred
-//                    Color.clear.frame(width: 44, height: 44)
+//                    Button {
+//                        if isEditing { saveEdits() } else { isEditing = true }
+//                    } label: {
+//                        Text(isEditing ? "Save" : "Edit")
+//                            .font(.callout).fontWeight(.semibold)
+//                            .foregroundStyle(.white)
+//                            .padding(.horizontal, 18)
+//                            .padding(.vertical, 9)
+//                            .glassEffect(in: Capsule())
+//                    }
 //                }
 //                .padding(.horizontal, 20)
 //                .padding(.top, 12)
@@ -537,12 +621,12 @@ private struct SessionDetailPreview: View {
 //                        .padding(.horizontal, 24)
 //                        .padding(.top, 24)
 //
-//                        // ── Stats banner (matches WalkStatsView) ───────────
+//                        // ── Stats banner ───────────────────────────────
 //                        Text("stats")
 //                            .font(.subheadline).fontWeight(.medium)
 //                            .foregroundStyle(.white.opacity(0.45))
 //                            .padding(.horizontal, 24)
-//                            .padding(.top, 40)
+//                            .padding(.top, 24)
 //
 //                        HStack(spacing: 0) {
 //                            DetailStatColumn(emoji: "⏱️",
@@ -563,16 +647,16 @@ private struct SessionDetailPreview: View {
 //                        }
 //                        .frame(maxWidth: .infinity)
 //                        .padding(.vertical, 22)
-//                        .background(Color("SecondColor"), in: RoundedRectangle(cornerRadius: 20))
+//                        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 20))
 //                        .padding(.horizontal, 20)
 //                        .padding(.top, 14)
 //
-//                        // ── Mood before & after ────────────────────────────
+//                        // ── Mood before & after ────────────────────────
 //                        Text("How You feel before and after")
 //                            .font(.callout)
 //                            .foregroundStyle(.white.opacity(0.55))
 //                            .padding(.horizontal, 24)
-//                            .padding(.top, 44)
+//                            .padding(.top, 28)
 //
 //                        MoodComparisonCard(
 //                            moodBefore: session.moodBefore,
@@ -581,7 +665,7 @@ private struct SessionDetailPreview: View {
 //                        .padding(.horizontal, 20)
 //                        .padding(.top, 14)
 //
-//                        // ── Reflection ─────────────────────────────────────
+//                        // ── Reflection ─────────────────────────────────
 //                        VStack(alignment: .leading, spacing: 5) {
 //                            Text("Reflection")
 //                                .font(.title3).fontWeight(.bold)
@@ -591,32 +675,32 @@ private struct SessionDetailPreview: View {
 //                                .foregroundStyle(.white.opacity(0.45))
 //                        }
 //                        .padding(.horizontal, 24)
-//                        .padding(.top, 48)
+//                        .padding(.top, 28)
 //
 //                        if session.reflectionType == "guided" {
 //                            ForEach(0..<3, id: \.self) { i in
-//                                let answer = i < session.guidedAnswers.count
-//                                    ? session.guidedAnswers[i] : ""
 //                                ReflectionEntry(
-//                                    question: guidedQuestions[i],
-//                                    answer:   answer
+//                                    question:  guidedQuestions[i],
+//                                    answer:    answerBinding(for: i),
+//                                    isEditing: isEditing
 //                                )
 //                            }
 //                        } else {
 //                            ReflectionEntry(
-//                                question: "Write freely",
-//                                answer:   session.freeReflection
+//                                question:  "Write freely",
+//                                answer:    $editedFreeReflection,
+//                                isEditing: isEditing
 //                            )
 //                        }
 //
-//                        // ── During-walk notes ──────────────────────────────
+//                        // ── During-walk notes ──────────────────────────
 //                        if !notesWithTimestamps.isEmpty {
 //
 //                            Text("During walk notes")
 //                                .font(.callout).fontWeight(.semibold)
 //                                .foregroundStyle(.white.opacity(0.55))
 //                                .padding(.horizontal, 24)
-//                                .padding(.top, 48)
+//                                .padding(.top, 28)
 //
 //                            Rectangle()
 //                                .fill(Color.white.opacity(0.12))
@@ -638,12 +722,12 @@ private struct SessionDetailPreview: View {
 //                            }
 //                        }
 //
-//                        // ── Pre-walk note ──────────────────────────────────
+//                        // ── Pre-walk note ──────────────────────────────
 //                        Text("pre-walk notes")
 //                            .font(.callout).fontWeight(.semibold)
 //                            .foregroundStyle(.white.opacity(0.55))
 //                            .padding(.horizontal, 24)
-//                            .padding(.top, 48)
+//                            .padding(.top, 28)
 //
 //                        Text("How do you feel?")
 //                            .font(.callout).fontWeight(.semibold)
@@ -651,21 +735,55 @@ private struct SessionDetailPreview: View {
 //                            .padding(.horizontal, 24)
 //                            .padding(.top, 16)
 //
-//                        ReadOnlyBox(
-//                            text:    session.preWalkNote.isEmpty ? "Skipped" : session.preWalkNote,
-//                            isEmpty: session.preWalkNote.isEmpty
+//                        EditableBox(
+//                            text:      $editedPreWalkNote,
+//                            isEmpty:   editedPreWalkNote.isEmpty,
+//                            isEditing: isEditing
 //                        )
 //                        .padding(.top, 14)
 //
 //                        Spacer().frame(height: 56)
 //                    }
 //                }
+//                .scrollDismissesKeyboard(.immediately)
 //            }
 //            .padding(.top, safeTop)
 //        }
 //        .ignoresSafeArea(.all)
 //        .toolbar(.hidden, for: .navigationBar)
-//        .onAppear { readSafeArea() }
+//        .onAppear {
+//            readSafeArea()
+//            loadEditable()
+//        }
+//    }
+//
+//    // MARK: - Helpers
+//
+//    /// Safe binding into editedAnswers without index-out-of-range.
+//    private func answerBinding(for i: Int) -> Binding<String> {
+//        Binding(
+//            get: { i < editedAnswers.count ? editedAnswers[i] : "" },
+//            set: { newVal in
+//                while editedAnswers.count <= i { editedAnswers.append("") }
+//                editedAnswers[i] = newVal
+//            }
+//        )
+//    }
+//
+//    private func loadEditable() {
+//        editedAnswers        = session.guidedAnswers.count >= 3
+//                                    ? session.guidedAnswers
+//                                    : Array(session.guidedAnswers) + Array(repeating: "", count: 3 - session.guidedAnswers.count)
+//        editedFreeReflection = session.freeReflection
+//        editedPreWalkNote    = session.preWalkNote
+//    }
+//
+//    private func saveEdits() {
+//        session.guidedAnswers   = editedAnswers
+//        session.freeReflection  = editedFreeReflection
+//        session.preWalkNote     = editedPreWalkNote
+//        try? modelContext.save()
+//        isEditing = false
 //    }
 //
 //    // MARK: - Safe area
@@ -687,8 +805,6 @@ private struct SessionDetailPreview: View {
 //    let moodAfter:  Int
 //
 //    var body: some View {
-//        // Both candles are the same physical size — flame scale alone
-//        // communicates the mood difference (tiny/no flame vs full flame).
 //        HStack(alignment: .bottom, spacing: 0) {
 //
 //            // Before
@@ -696,7 +812,6 @@ private struct SessionDetailPreview: View {
 //                CandleComponent()
 //                    .flameScale(CandleComponent.flameScale(for: moodBefore))
 //                    .flickering(false)
-//                    .frame(height: 185)   // same frame as after
 //
 //                Text(CandleComponent.label(for: moodBefore))
 //                    .font(.caption).fontWeight(.medium)
@@ -708,14 +823,13 @@ private struct SessionDetailPreview: View {
 //            Image(systemName: "arrow.right")
 //                .font(.system(size: 18, weight: .regular))
 //                .foregroundStyle(.white.opacity(0.55))
-//                .padding(.bottom, 34)   // lifts arrow to ~body centre
+//                .padding(.bottom, 34)
 //
 //            // After
 //            VStack(spacing: 10) {
 //                CandleComponent()
 //                    .flameScale(CandleComponent.flameScale(for: moodAfter))
 //                    .flickering(false)
-//                    .frame(height: 185)
 //
 //                Text(CandleComponent.label(for: moodAfter))
 //                    .font(.caption).fontWeight(.medium)
@@ -725,11 +839,11 @@ private struct SessionDetailPreview: View {
 //        }
 //        .padding(.horizontal, 24)
 //        .padding(.vertical, 24)
-//        .background(Color("SecondColor"), in: RoundedRectangle(cornerRadius: 20))
+//        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 20))
 //    }
 //}
 //
-//// MARK: - DetailStatColumn  (mirrors WalkStatsView's StatColumn)
+//// MARK: - DetailStatColumn
 //
 //private struct DetailStatColumn: View {
 //    let emoji: String
@@ -756,33 +870,32 @@ private struct SessionDetailPreview: View {
 //    }
 //}
 //
-//// MARK: - ReflectionEntry  (question label + read-only answer box)
+//// MARK: - ReflectionEntry
 //
 //private struct ReflectionEntry: View {
-//    let question: String
-//    let answer:   String
+//    let question:  String
+//    @Binding var answer: String
+//    let isEditing: Bool
 //
 //    var body: some View {
-//        VStack(alignment: .leading, spacing: 20) {
+//        VStack(alignment: .leading, spacing: 8) {
 //            Text(question)
 //                .font(.callout).fontWeight(.semibold)
 //                .foregroundStyle(.white)
 //                .padding(.horizontal, 24)
 //
-//            ReadOnlyBox(
-//                text:    answer.isEmpty ? "—" : answer,
-//                isEmpty: answer.isEmpty
-//            )
+//            EditableBox(text: $answer, isEmpty: answer.isEmpty, isEditing: isEditing)
 //        }
 //        .padding(.top, 32)
 //    }
 //}
 //
-//// MARK: - ReadOnlyBox  (260 pt tall · stroke matching PreWalkNoteView)
+//// MARK: - EditableBox  (read-only or editable · 260 pt tall)
 //
-//private struct ReadOnlyBox: View {
-//    let text:    String
-//    let isEmpty: Bool
+//private struct EditableBox: View {
+//    @Binding var text: String
+//    let isEmpty:   Bool
+//    let isEditing: Bool
 //
 //    var body: some View {
 //        ZStack(alignment: .topLeading) {
@@ -790,14 +903,28 @@ private struct SessionDetailPreview: View {
 //                .fill(Color("SecondColor"))
 //                .overlay(
 //                    RoundedRectangle(cornerRadius: 20)
-//                        .stroke(Color.white.opacity(0.45), lineWidth: 1)
+//                        .stroke(
+//                            Color.white.opacity(isEditing ? 0.70 : 0.45),
+//                            lineWidth: isEditing ? 1.5 : 1
+//                        )
 //                )
 //
-//            Text(text)
-//                .font(.body)
-//                .foregroundStyle(isEmpty ? .white.opacity(0.30) : .white.opacity(0.85))
-//                .padding(.horizontal, 16)
-//                .padding(.vertical, 14)
+//            if isEditing {
+//                TextEditor(text: $text)
+//                    .font(.body)
+//                    .foregroundStyle(.white.opacity(0.85))
+//                    .scrollContentBackground(.hidden)
+//                    .background(.clear)
+//                    .padding(.horizontal, 12)
+//                    .padding(.vertical, 10)
+//                    .tint(.white)
+//            } else {
+//                Text(text.isEmpty ? "—" : text)
+//                    .font(.body)
+//                    .foregroundStyle(isEmpty ? .white.opacity(0.30) : .white.opacity(0.85))
+//                    .padding(.horizontal, 16)
+//                    .padding(.vertical, 14)
+//            }
 //        }
 //        .frame(maxWidth: .infinity)
 //        .frame(height: 260)
@@ -886,3 +1013,9 @@ private struct SessionDetailPreview: View {
 //}
 //
 //#Preview { SessionDetailPreview() }
+//
+
+
+
+
+

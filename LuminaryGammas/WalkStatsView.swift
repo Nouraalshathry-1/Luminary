@@ -7,6 +7,7 @@
 
 
 
+
 import SwiftUI
 import SwiftData
 
@@ -208,16 +209,19 @@ private struct StatColumn: View {
     let value: String
     let label: String
 
+    @ScaledMetric private var valueFontSize: CGFloat = 30
+    @ScaledMetric private var emojiFontSize: CGFloat = 12
+
     var body: some View {
         VStack(spacing: 5) {
             Text(value)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(.system(size: valueFontSize, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
                 .monospacedDigit()
 
             HStack(spacing: 4) {
                 Text(emoji)
-                    .font(.system(size: 12))
+                    .font(.system(size: emojiFontSize))
                 Text(label)
                     .font(.caption).fontWeight(.medium)
                     .foregroundStyle(.secondary)
@@ -301,6 +305,9 @@ private struct WalkStatsPreview: View {
 
 #Preview { WalkStatsPreview() }
 
+
+
+
 //import SwiftUI
 //import SwiftData
 //
@@ -308,8 +315,11 @@ private struct WalkStatsPreview: View {
 //
 //struct WalkStatsView: View {
 //    @Environment(\.modelContext) private var modelContext
+//    @Environment(\.dismiss)      private var dismiss
 //    @EnvironmentObject private var nav: HomeViewModel
+//
 //    let session: WalkSession
+//    var showBackButton: Bool = false
 //
 //    @State private var showFreeReflection  = false
 //    @State private var showGuidedReflection = false
@@ -340,6 +350,19 @@ private struct WalkStatsPreview: View {
 //            // ── Scrollable content ─────────────────────────────────────
 //            ScrollView(showsIndicators: false) {
 //                VStack(alignment: .leading, spacing: 0) {
+//
+//                    // ── Back button (History flow only) ────────────────
+//                    if showBackButton {
+//                        Button { dismiss() } label: {
+//                            Image(systemName: "chevron.left")
+//                                .font(.system(size: 16, weight: .semibold))
+//                                .foregroundStyle(.white)
+//                                .frame(width: 44, height: 44)
+//                                .glassEffect(in: Circle())
+//                        }
+//                        .padding(.horizontal, 20)
+//                        .padding(.top, 8)
+//                    }
 //
 //                    // ── Dynamic title ──────────────────────────────────
 //                    VStack(alignment: .leading, spacing: 6) {
@@ -401,6 +424,7 @@ private struct WalkStatsPreview: View {
 //
 //                        Button {
 //                            nav.showWalkSetup = false
+//                            nav.showHistory   = false
 //                        } label: {
 //                            Text("Reflect later from history")
 //                                .font(.callout).fontWeight(.medium)
@@ -577,4 +601,5 @@ private struct WalkStatsPreview: View {
 //}
 //
 //#Preview { WalkStatsPreview() }
-//
+
+

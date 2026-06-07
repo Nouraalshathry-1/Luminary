@@ -6,6 +6,10 @@
 //
 
 
+
+
+
+
 import SwiftUI
 import SwiftData
 import CoreMotion
@@ -60,6 +64,8 @@ struct DuringWalkView: View {
     @State private var safeTop:    CGFloat = 59
     @State private var safeBottom: CGFloat = 34
 
+    @ScaledMetric private var timerFontSize: CGFloat = 38
+
     var body: some View {
         ZStack {
             Color("AccentColor").ignoresSafeArea()
@@ -87,6 +93,21 @@ struct DuringWalkView: View {
                     .allowsHitTesting(false)
 
                 Spacer()
+
+                // ── Duration overlay — sits in the middle of the candle body
+                VStack(spacing: 6) {
+                    Text("session duration")
+                        .font(.callout)
+                        .foregroundStyle(Color("AccentColor").opacity(0.55))
+
+                    Text(formattedDuration)
+                        .font(.system(size: timerFontSize, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color("AccentColor"))
+                        .monospacedDigit()
+                }
+                .allowsHitTesting(false)
+
+                Spacer().frame(height: 80)
 
                 Button(action: endWalk) {
                     Text("End the walk")
@@ -117,6 +138,15 @@ struct DuringWalkView: View {
     }
 
     // MARK: - Helpers
+
+    private var formattedDuration: String {
+        let h = tracker.elapsedSeconds / 3600
+        let m = (tracker.elapsedSeconds % 3600) / 60
+        let s = tracker.elapsedSeconds % 60
+        return h > 0
+            ? String(format: "%d:%02d:%02d", h, m, s)
+            : String(format: "%02d:%02d", m, s)
+    }
 
     private func endWalk() {
         tracker.stop()
@@ -157,7 +187,7 @@ struct WalkNoteSheet: View {
             VStack(alignment: .leading, spacing: 16) {
 
                 Label {
-                    Text("Take a pause from walking before writing")
+                    Text("Take a pause from walking, then write")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } icon: {
@@ -213,6 +243,10 @@ struct WalkNoteSheet: View {
     return NavigationStack { DuringWalkView(session: session) }
         .modelContainer(container)
 }
+
+
+
+
 
 //import SwiftUI
 //import SwiftData
@@ -296,6 +330,21 @@ struct WalkNoteSheet: View {
 //
 //                Spacer()
 //
+//                // ── Duration overlay — sits in the middle of the candle body
+//                VStack(spacing: 6) {
+//                    Text("session duration")
+//                        .font(.callout)
+//                        .foregroundStyle(Color("AccentColor").opacity(0.55))
+//
+//                    Text(formattedDuration)
+//                        .font(.system(size: 38, weight: .bold, design: .rounded))
+//                        .foregroundStyle(Color("AccentColor"))
+//                        .monospacedDigit()
+//                }
+//                .allowsHitTesting(false)
+//
+//                Spacer().frame(height: 80)
+//
 //                Button(action: endWalk) {
 //                    Text("End the walk")
 //                        .font(.headline).fontWeight(.semibold)
@@ -326,6 +375,15 @@ struct WalkNoteSheet: View {
 //
 //    // MARK: - Helpers
 //
+//    private var formattedDuration: String {
+//        let h = tracker.elapsedSeconds / 3600
+//        let m = (tracker.elapsedSeconds % 3600) / 60
+//        let s = tracker.elapsedSeconds % 60
+//        return h > 0
+//            ? String(format: "%d:%02d:%02d", h, m, s)
+//            : String(format: "%02d:%02d", m, s)
+//    }
+//
 //    private func endWalk() {
 //        tracker.stop()
 //        session.durationMinutes = max(1, tracker.elapsedSeconds / 60)
@@ -339,6 +397,7 @@ struct WalkNoteSheet: View {
 //        pendingNoteText = ""
 //        guard !trimmed.isEmpty else { return }
 //        session.duringWalkNotes.append(trimmed)
+//        session.duringWalkNoteTimestamps.append(Date())
 //        try? modelContext.save()
 //    }
 //
@@ -421,3 +480,6 @@ struct WalkNoteSheet: View {
 //        .modelContainer(container)
 //}
 //
+//
+//
+

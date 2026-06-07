@@ -5,6 +5,9 @@
 //  Created by Noura Alshathry on 02/06/2026.
 //
 
+
+
+
 import SwiftUI
 import SwiftData
 
@@ -116,7 +119,7 @@ struct GuidedReflectionView: View {
                                 .padding(.vertical, 10)
                                 .tint(.white)
                         }
-                        .frame(height: 260)
+                        .frame(minHeight: 260)
                         .padding(.horizontal, 20)
                         .padding(.top, 12)
 
@@ -306,6 +309,13 @@ private struct GuidedReflectionPreview: View {
 
 #Preview { GuidedReflectionPreview() }
 
+
+
+
+
+
+
+
 //import SwiftUI
 //import SwiftData
 //
@@ -324,6 +334,12 @@ private struct GuidedReflectionPreview: View {
 //        "How are you feeling right now?",
 //        "What did the walk bring up that you hadn\u{2019}t noticed before?",
 //        "What\u{2019}s one thing you want to carry forward from this walk?"
+//    ]
+//
+//    private let placeholders: [String] = [
+//        "Right now, I feel... or Checking in with myself...",
+//        "I noticed that... or A thought that came to mind...",
+//        "I want to remember to... or Taking this with me..."
 //    ]
 //
 //    @State private var answerText   = ""
@@ -385,8 +401,21 @@ private struct GuidedReflectionPreview: View {
 //
 //                        // ── Answer text editor ─────────────────────────
 //                        ZStack(alignment: .topLeading) {
-//                            RoundedRectangle(cornerRadius: 16)
+//                            RoundedRectangle(cornerRadius: 20)
 //                                .fill(Color("SecondColor"))
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 20)
+//                                        .stroke(Color.white.opacity(0.45), lineWidth: 1)
+//                                )
+//
+//                            if answerText.isEmpty {
+//                                Text(placeholders[questionIndex])
+//                                    .font(.body)
+//                                    .foregroundStyle(.white.opacity(0.25))
+//                                    .padding(.horizontal, 16)
+//                                    .padding(.top, 16)
+//                                    .allowsHitTesting(false)
+//                            }
 //
 //                            TextEditor(text: $answerText)
 //                                .focused($editorFocused)
@@ -460,6 +489,7 @@ private struct GuidedReflectionPreview: View {
 //                        saveAnswer()
 //                        if isLastQuestion {
 //                            nav.showWalkSetup = false
+//                            nav.showHistory   = false
 //                        } else {
 //                            showNext = true
 //                        }
@@ -586,3 +616,4 @@ private struct GuidedReflectionPreview: View {
 //}
 //
 //#Preview { GuidedReflectionPreview() }
+//
