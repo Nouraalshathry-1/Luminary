@@ -86,6 +86,7 @@ struct DuringWalkView: View {
             // ── Content overlay: hint at top, button at bottom ─────────
             VStack(spacing: 0) {
                 Text("Tap the screen to take a quick note")
+                    .foregroundStyle(Color("WColor"))
                     .font(.callout)
                     .foregroundStyle(.white.opacity(0.3))
                     .multilineTextAlignment(.center)
