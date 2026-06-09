@@ -5,6 +5,8 @@
 //  Created by Noura Alshathry on 02/06/2026.
 //
 
+
+
 import SwiftUI
 import SwiftData
 
@@ -30,22 +32,24 @@ struct AfterWalkingView: View {
             VStack(alignment: .leading, spacing: 0) {
 
                 // ── Custom nav header ──────────────────────────────────
-                HStack(spacing: 14) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 44, height: 44)
-                            .glassEffect(in: Circle())
-                    }
-
+                ZStack {
                     Text("After Walking")
                         .font(.title3).fontWeight(.semibold)
                         .foregroundStyle(.white)
 
-                    Spacer()
+                    HStack {
+                        Button { dismiss() } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .glassEffect(in: Circle())
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity)
                 .padding(.top, 12)
 
                 // ── Title + subtitle ───────────────────────────────────
@@ -139,5 +143,6 @@ struct AfterWalkingView: View {
     }
     .modelContainer(container)
 }
+
 
 

@@ -82,18 +82,18 @@ struct WalkStatsView: View {
                         .font(.subheadline).fontWeight(.medium)
                         .foregroundStyle(.white.opacity(0.45))
                         .padding(.horizontal, 24)
-                        .padding(.top, 48)
+                        .padding(.top, 36)
 
                     StatsBannerView(session: session)
                         .padding(.horizontal, 20)
-                        .padding(.top, 10)
+                        .padding(.top, 14)
 
                     // ── Reflection section ─────────────────────────────
                     Text("How do you want to reflect?")
                         .font(.title3).fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24)
-                        .padding(.top, 65)
+                        .padding(.top, 36)
 
                     // Option cards
                     VStack(spacing: 14) {
@@ -181,7 +181,6 @@ private struct StatsBannerView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-
             StatColumn(emoji: "⏱️", value: "\(max(1, session.durationMinutes))", label: "Minutes")
 
             Rectangle()
@@ -198,7 +197,11 @@ private struct StatsBannerView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 22)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .background(Color("StatsBox"), in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+        )
     }
 }
 
@@ -210,21 +213,22 @@ private struct StatColumn: View {
     let label: String
 
     @ScaledMetric private var valueFontSize: CGFloat = 30
-    @ScaledMetric private var emojiFontSize: CGFloat = 12
 
     var body: some View {
         VStack(spacing: 5) {
             Text(value)
                 .font(.system(size: valueFontSize, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
                 .monospacedDigit()
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
 
             HStack(spacing: 4) {
                 Text(emoji)
-                    .font(.system(size: emojiFontSize))
+                    .font(.system(size: 12))
                 Text(label)
                     .font(.caption).fontWeight(.medium)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.55))
             }
         }
         .frame(maxWidth: .infinity)
@@ -269,7 +273,7 @@ private struct ReflectionOptionCard: View {
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
-            .background(Color("ButtonColor"), in: RoundedRectangle(cornerRadius: 26))
+            .glassEffect(in: RoundedRectangle(cornerRadius: 26))
         }
         .buttonStyle(.plain)
     }

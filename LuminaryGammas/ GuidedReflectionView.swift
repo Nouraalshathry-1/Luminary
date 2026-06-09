@@ -78,7 +78,7 @@ struct GuidedReflectionView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 14)
+                .padding(.top, 24)
 
                 // ── Scrollable body ────────────────────────────────────
                 ScrollView(showsIndicators: false) {
