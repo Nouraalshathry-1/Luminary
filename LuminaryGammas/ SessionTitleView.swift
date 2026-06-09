@@ -60,7 +60,7 @@ struct SessionTitleView: View {
                     .font(.callout)
                     .foregroundStyle(.white.opacity(0.5))
                     .padding(.horizontal, 20)
-                    .padding(.top, 20)
+                    .padding(.top, 30)
 
                 // ── Text editor — 3 lines max ──────────────────────────
                 ZStack(alignment: .topLeading) {
