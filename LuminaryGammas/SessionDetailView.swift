@@ -9,7 +9,6 @@
 
 
 
-
 import SwiftUI
 import SwiftData
 
@@ -102,6 +101,7 @@ struct SessionDetailView: View {
                 // ── Scrollable body ────────────────────────────────────
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
+
 
                         // Session name + date
                         VStack(alignment: .leading, spacing: 6) {
@@ -240,7 +240,8 @@ struct SessionDetailView: View {
                         Spacer().frame(height: 56)
                     }
                 }
-                .scrollDismissesKeyboard(.immediately)
+                .scrollDismissesKeyboard(.interactively)
+                .keyboardAwarePadding()
             }
             .padding(.top, safeTop)
         }
@@ -511,5 +512,29 @@ private struct SessionDetailPreview: View {
 
 #Preview { SessionDetailPreview() }
 
+// MARK: - Keyboard-aware bottom padding
 
+private extension View {
+    func keyboardAwarePadding() -> some View {
+        modifier(KeyboardAwareModifier())
+    }
+}
+
+private struct KeyboardAwareModifier: ViewModifier {
+    @State private var keyboardHeight: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, keyboardHeight)
+            .animation(.easeOut(duration: 0.25), value: keyboardHeight)
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { note in
+                if let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                    keyboardHeight = frame.height
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                keyboardHeight = 0
+            }
+    }
+}
 
