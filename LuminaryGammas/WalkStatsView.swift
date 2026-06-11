@@ -6,8 +6,6 @@
 //
 
 
-
-
 import SwiftUI
 import SwiftData
 
@@ -116,24 +114,26 @@ struct WalkStatsView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
 
-                    // ── "or" + skip link ───────────────────────────────
-                    VStack(spacing: 10) {
-                        Text("or")
-                            .font(.footnote)
-                            .foregroundStyle(.white.opacity(0.35))
+                    // ── "or" + skip link (hidden when opened from History) ──
+                    if !showBackButton {
+                        VStack(spacing: 10) {
+                            Text("or")
+                                .font(.footnote)
+                                .foregroundStyle(.white.opacity(0.35))
 
-                        Button {
-                            nav.showWalkSetup = false
-                            nav.showHistory   = false
-                        } label: {
-                            Text("Reflect later from history")
-                                .font(.callout).fontWeight(.medium)
-                                .foregroundStyle(.white.opacity(0.55))
+                            Button {
+                                nav.showWalkSetup = false
+                                nav.showHistory   = false
+                            } label: {
+                                Text("Reflect later from history")
+                                    .font(.callout).fontWeight(.medium)
+                                    .foregroundStyle(.white.opacity(0.55))
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 12)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 12)
-                    .padding(.bottom, safeBottom + 16)
+                    Color.clear.frame(height: safeBottom + 16)
                 }
             }
             .padding(.top, safeTop + 30)
@@ -249,7 +249,7 @@ private struct ReflectionOptionCard: View {
                 // Emoji circle
                 ZStack {
                     Circle()
-                        .fill(Color.primary.opacity(0.10))
+                        .fill(Color.white.opacity(0.20))
                         .frame(width: 50, height: 50)
                     Text(emoji)
                         .font(.system(size: 22))
@@ -259,21 +259,28 @@ private struct ReflectionOptionCard: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
                         .font(.body).fontWeight(.semibold)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.white)
                     Text(subtitle)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.white.opacity(0.55))
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.white.opacity(0.40))
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
-            .glassEffect(in: RoundedRectangle(cornerRadius: 26))
+            .background(
+                RoundedRectangle(cornerRadius: 26)
+                    .fill(Color.white.opacity(0.18))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 26)
+                            .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                    )
+            )
         }
         .buttonStyle(.plain)
     }

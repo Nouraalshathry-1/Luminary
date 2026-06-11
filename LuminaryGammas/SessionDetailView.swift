@@ -8,7 +8,6 @@
 
 
 
-
 import SwiftUI
 import SwiftData
 
@@ -69,32 +68,35 @@ struct SessionDetailView: View {
             VStack(spacing: 0) {
 
                 // ── Header ─────────────────────────────────────────────
-                HStack(spacing: 14) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 44, height: 44)
-                            .glassEffect(in: Circle())
-                    }
-
+                ZStack {
                     Text("History")
                         .font(.title).fontWeight(.bold)
                         .foregroundStyle(.white)
 
-                    Spacer()
+                    HStack {
+                        Button { dismiss() } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .glassEffect(in: Circle())
+                        }
 
-                    Button {
-                        if isEditing { saveEdits() } else { isEditing = true }
-                    } label: {
-                        Text(isEditing ? "Save" : "Edit")
-                            .font(.callout).fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 18)
-                            .padding(.vertical, 9)
-                            .glassEffect(in: Capsule())
+                        Spacer()
+
+                        Button {
+                            if isEditing { saveEdits() } else { isEditing = true }
+                        } label: {
+                            Text(isEditing ? "Save" : "Edit")
+                                .font(.callout).fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 18)
+                                .padding(.vertical, 9)
+                                .glassEffect(in: Capsule())
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
 
@@ -161,30 +163,27 @@ struct SessionDetailView: View {
                         .padding(.top, 14)
 
                         // ── Reflection ─────────────────────────────────
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text("Reflection")
-                                .font(.title3).fontWeight(.bold)
-                                .foregroundStyle(.white)
-                            Text("Post-walk notes")
-                                .font(.footnote)
-                                .foregroundStyle(.white.opacity(0.45))
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 28)
+                        Text("Reflection")
+                            .font(.title2).fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.top, 28)
 
                         if session.reflectionType == "guided" {
                             ForEach(0..<3, id: \.self) { i in
                                 ReflectionEntry(
                                     question:  guidedQuestions[i],
                                     answer:    answerBinding(for: i),
-                                    isEditing: isEditing
+                                    isEditing: isEditing,
+                                    showLabel: i == 0
                                 )
                             }
                         } else {
                             ReflectionEntry(
                                 question:  "Write freely",
                                 answer:    $editedFreeReflection,
-                                isEditing: isEditing
+                                isEditing: isEditing,
+                                showLabel: true
                             )
                         }
 
@@ -228,7 +227,7 @@ struct SessionDetailView: View {
                             .font(.callout).fontWeight(.semibold)
                             .foregroundStyle(.white)
                             .padding(.horizontal, 24)
-                            .padding(.top, 16)
+                            .padding(.top, 10)
 
                         EditableBox(
                             text:      $editedPreWalkNote,
@@ -371,20 +370,30 @@ private struct DetailStatColumn: View {
 // MARK: - ReflectionEntry
 
 private struct ReflectionEntry: View {
-    let question:  String
+    let question:   String
     @Binding var answer: String
-    let isEditing: Bool
+    let isEditing:  Bool
+    var showLabel:  Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
+            if showLabel {
+                Text("Post-walk notes")
+                    .font(.callout).fontWeight(.semibold)
+                    .foregroundStyle(.white.opacity(0.55))
+                    .padding(.horizontal, 24)
+                    .padding(.top, 14)
+            }
+
             Text(question)
                 .font(.callout).fontWeight(.semibold)
                 .foregroundStyle(.white)
                 .padding(.horizontal, 24)
+                .padding(.top, showLabel ? 6 : 28)
 
             EditableBox(text: $answer, isEmpty: answer.isEmpty, isEditing: isEditing)
+                .padding(.top, 14)
         }
-        .padding(.top, 32)
     }
 }
 
@@ -537,4 +546,6 @@ private struct KeyboardAwareModifier: ViewModifier {
             }
     }
 }
+
+
 
